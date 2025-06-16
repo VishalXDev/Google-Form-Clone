@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 import { getFields, createForm } from "../services/api";
 
+type Field = {
+  id: number;
+  label: string;
+  field_type: string;
+};
+
 export default function FormBuilder() {
   const [title, setTitle] = useState("");
-  const [availableFields, setAvailableFields] = useState<any[]>([]);
+  const [availableFields, setAvailableFields] = useState<Field[]>([]);
   const [selectedFieldIds, setSelectedFieldIds] = useState<number[]>([]);
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const fetchFields = async () => {
-      const res = await getFields();
-      setAvailableFields(res.data);
+      try {
+        const res = await getFields();
+        setAvailableFields(res.data);
+      } catch (err) {
+        console.error("Failed to load fields", err);
+      }
     };
     fetchFields();
   }, []);
@@ -22,15 +32,16 @@ export default function FormBuilder() {
   };
 
   const handleSubmit = async () => {
-    if (!title.trim()) return alert("Title is required");
-    if (selectedFieldIds.length === 0)
-      return alert("Select at least one field");
+    if (!title.trim()) return alert("Title is required.");
+    if (selectedFieldIds.length === 0) return alert("Select at least one field.");
 
     try {
       const res = await createForm({ title, field_ids: selectedFieldIds });
-      setSuccess(`✅ Form "${res.data.title}" created with link: ${res.data.unique_link}`);
+      setSuccess(`✅ "${res.data.title}" created! Link: /form/${res.data.unique_link}`);
       setTitle("");
       setSelectedFieldIds([]);
+
+      setTimeout(() => setSuccess(""), 4000); // auto-clear after 4s
     } catch (err) {
       console.error("Error creating form", err);
       alert("Failed to create form");
@@ -52,19 +63,19 @@ export default function FormBuilder() {
       <div>
         <p className="font-medium mb-2">Select Fields:</p>
         {availableFields.length === 0 ? (
-          <p className="text-gray-500">No fields available.</p>
+          <p className="text-gray-500">No fields available. Create one first.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-2 max-h-64 overflow-y-auto pr-1">
             {availableFields.map((field) => (
-              <li key={field.id}>
-                <label className="flex items-center gap-2">
+              <li key={field.id} className="flex items-center">
+                <label className="flex items-center gap-2 cursor-pointer w-full p-2 hover:bg-slate-50 rounded">
                   <input
                     type="checkbox"
                     checked={selectedFieldIds.includes(field.id)}
                     onChange={() => toggleField(field.id)}
                   />
-                  <span>
-                    {field.label} ({field.field_type})
+                  <span className="flex-1">
+                    {field.label} <span className="text-xs text-slate-500">({field.field_type})</span>
                   </span>
                 </label>
               </li>
@@ -75,12 +86,16 @@ export default function FormBuilder() {
 
       <button
         onClick={handleSubmit}
-        className="bg-green-600 text-white px-4 py-2 rounded"
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
       >
         Save Form
       </button>
 
-      {success && <p className="text-green-600">{success}</p>}
+      {success && (
+        <p className="text-green-600 text-sm font-medium mt-2">
+          {success}
+        </p>
+      )}
     </div>
   );
 }
