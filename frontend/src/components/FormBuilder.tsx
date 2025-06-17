@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getFields, createForm } from "../services/api";
+import { useToast } from "../components/Toast";
 
 type Field = {
   id: number;
@@ -7,11 +8,16 @@ type Field = {
   field_type: string;
 };
 
-export default function FormBuilder() {
+interface FormBuilderProps {
+  onSuccess?: () => void;
+}
+
+export default function FormBuilder({ onSuccess }: FormBuilderProps) {
   const [title, setTitle] = useState("");
   const [availableFields, setAvailableFields] = useState<Field[]>([]);
   const [selectedFieldIds, setSelectedFieldIds] = useState<number[]>([]);
-  const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -20,6 +26,7 @@ export default function FormBuilder() {
         setAvailableFields(res.data);
       } catch (err) {
         console.error("Failed to load fields", err);
+        showToast("Failed to load fields", "error");
       }
     };
     fetchFields();
@@ -32,32 +39,41 @@ export default function FormBuilder() {
   };
 
   const handleSubmit = async () => {
-    if (!title.trim()) return alert("Title is required.");
-    if (selectedFieldIds.length === 0) return alert("Select at least one field.");
+    if (!title.trim()) {
+      showToast("Title is required", "error");
+      return;
+    }
+    if (selectedFieldIds.length === 0) {
+      showToast("Select at least one field", "error");
+      return;
+    }
 
+    setIsSubmitting(true);
     try {
       const res = await createForm({ title, field_ids: selectedFieldIds });
-      setSuccess(`✅ "${res.data.title}" created! Link: /form/${res.data.unique_link}`);
+      showToast(`✅ "${res.data.title}" created`, "success");
       setTitle("");
       setSelectedFieldIds([]);
-
-      setTimeout(() => setSuccess(""), 4000); // auto-clear after 4s
+      if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Error creating form", err);
-      alert("Failed to create form");
+      showToast("Failed to create form", "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="bg-white rounded-xl shadow p-6 max-w-xl space-y-4">
-      <h2 className="text-xl font-semibold">📑 Create New Form</h2>
+      <h2 className="text-xl font-semibold text-gray-900">📑 Create New Form</h2>
 
       <input
         type="text"
         placeholder="Form Title (e.g., Feedback Form)"
-        className="w-full p-2 border rounded"
+        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        disabled={isSubmitting}
       />
 
       <div>
@@ -67,15 +83,17 @@ export default function FormBuilder() {
         ) : (
           <ul className="space-y-2 max-h-64 overflow-y-auto pr-1">
             {availableFields.map((field) => (
-              <li key={field.id} className="flex items-center">
-                <label className="flex items-center gap-2 cursor-pointer w-full p-2 hover:bg-slate-50 rounded">
+              <li key={field.id}>
+                <label className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-50 rounded">
                   <input
                     type="checkbox"
                     checked={selectedFieldIds.includes(field.id)}
                     onChange={() => toggleField(field.id)}
+                    disabled={isSubmitting}
                   />
                   <span className="flex-1">
-                    {field.label} <span className="text-xs text-slate-500">({field.field_type})</span>
+                    {field.label}{" "}
+                    <span className="text-xs text-slate-500">({field.field_type})</span>
                   </span>
                 </label>
               </li>
@@ -86,16 +104,15 @@ export default function FormBuilder() {
 
       <button
         onClick={handleSubmit}
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+        disabled={isSubmitting}
+        className={`w-full py-2 px-4 rounded font-medium transition ${
+          isSubmitting
+            ? "bg-gray-400 text-white cursor-not-allowed"
+            : "bg-green-600 text-white hover:bg-green-700"
+        }`}
       >
-        Save Form
+        {isSubmitting ? "Saving..." : "Save Form"}
       </button>
-
-      {success && (
-        <p className="text-green-600 text-sm font-medium mt-2">
-          {success}
-        </p>
-      )}
     </div>
   );
 }
