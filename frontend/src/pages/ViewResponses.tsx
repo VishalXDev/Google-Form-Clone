@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getResponses, getFields, getFormByLink } from "../services/api";
+import { getResponses, getFields, getFormById } from "../services/api";
 
-type Field = {
+interface Field {
   id: number;
   label: string;
-};
+}
+
+interface Response {
+  id: number;
+  form_id: number;
+  answers: string; // stored as JSON string
+}
 
 export default function ViewResponses() {
   const { formId } = useParams();
-  const [responses, setResponses] = useState<any[]>([]);
+  const [responses, setResponses] = useState<Response[]>([]);
   const [fieldLabels, setFieldLabels] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -26,16 +32,15 @@ export default function ViewResponses() {
           return;
         }
 
-        const formRes = await getFormByLink(responseList[0].form_id.toString());
-        const form = formRes.data;
-        const fieldIds = form.fields; // already a parsed array
+        const formRes = await getFormById(responseList[0].form_id);
+        const fieldIds: number[] = JSON.parse(formRes.data.fields);
 
         const allFields = await getFields();
         const labelMap: Record<string, string> = {};
 
         allFields.data.forEach((f: Field) => {
           if (fieldIds.includes(f.id)) {
-            labelMap[f.id] = f.label;
+            labelMap[f.id.toString()] = f.label;
           }
         });
 

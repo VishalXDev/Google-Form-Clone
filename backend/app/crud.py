@@ -14,7 +14,6 @@ def create_field(db: Session, field: schemas.FieldCreate):
     db.commit()
     db.refresh(db_field)
 
-    # Decode options to list before returning (for Pydantic schema)
     if db_field.options:
         db_field.options = json.loads(db_field.options)
 

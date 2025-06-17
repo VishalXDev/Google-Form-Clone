@@ -7,8 +7,6 @@ import { useState, useEffect } from "react";
 export default function App() {
   const location = useLocation();
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  // You can later replace this with state/localStorage
   const latestFormLink = "d7dd815e";
 
   useEffect(() => {
@@ -24,11 +22,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,7 +40,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Desktop Nav */}
             <nav className="hidden md:flex items-center space-x-1">
               <Link to="/" className={`px-4 py-2 rounded-lg font-medium transition-all ${isActive("/") ? "bg-blue-100 text-blue-700 shadow-sm" : "text-slate-600 hover:text-blue-600 hover:bg-blue-50"}`}>
                 Dashboard
@@ -55,8 +51,6 @@ export default function App() {
                 Responses
               </Link>
             </nav>
-
-            {/* Clock */}
             <div className="hidden lg:flex items-center text-sm text-slate-500">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -67,7 +61,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Mobile Nav */}
       <div className="md:hidden bg-white border-b border-slate-200">
         <div className="flex justify-around py-2">
           <Link to="/" className={`flex flex-col items-center p-2 rounded-lg ${isActive("/") ? "text-blue-600" : "text-slate-500"}`}>
@@ -82,7 +75,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
           <Route path="/" element={<AdminDashboard />} />
@@ -92,7 +84,6 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white/50 backdrop-blur-sm border-t border-slate-200 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
