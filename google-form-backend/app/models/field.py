@@ -2,7 +2,9 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 from bson import ObjectId
+from enum import Enum
 
+# MongoDB-compatible ObjectId for Pydantic
 class PyObjectId(ObjectId):
     @classmethod
     def __get_validators__(cls):
@@ -18,17 +20,18 @@ class PyObjectId(ObjectId):
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
 
-class FieldType:
+# Enum for field types
+class FieldType(str, Enum):
     SINGLE_CHOICE = "single_choice"
     NUMBER = "number"
     TEXT = "text"
     EMAIL = "email"
     TEXTAREA = "textarea"
 
+# Field Schema
 class FieldModel(BaseModel):
-    """Base field model for database operations"""
     name: str = Field(..., description="Field label/name")
-    field_type: str = Field(..., description="Type of field (single_choice, number, text, email, textarea)")
+    field_type: FieldType = Field(..., description="Type of field")
     options: Optional[List[str]] = Field(None, description="Options for single_choice fields")
     is_required: bool = Field(default=False, description="Whether field is required")
     placeholder: Optional[str] = Field(None, description="Placeholder text")

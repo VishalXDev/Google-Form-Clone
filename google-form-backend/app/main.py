@@ -1,37 +1,47 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import forms, fields, responses
+from contextlib import asynccontextmanager
 from app.database.connection import connect_to_mongo, close_mongo_connection
+from app.routes import fields, forms, responses 
 
-app = FastAPI(title="Google Forms API", version="1.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await connect_to_mongo()
+    yield
+    # Shutdown
+    await close_mongo_connection()
 
-# Add CORS middleware
+app = FastAPI(
+    title="Google Forms Clone API",
+    description="A simplified version of Google Forms with form creation and response management",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # React app URL
+    allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Database events
-@app.on_event("startup")
-async def startup_db_client():
-    await connect_to_mongo()
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    await close_mongo_connection()
-
 # Include routers
-app.include_router(forms.router)
-app.include_router(fields.router)
-app.include_router(responses.router)
+app.include_router(fields.router, prefix="/api/v1")
+app.include_router(forms.router, prefix="/api/v1")
+app.include_router(responses.router, prefix="/api/v1") 
 
 @app.get("/")
-def root():
-    return {"message": "Google Forms API is running with MongoDB"}
+async def root():
+    return {"message": "Google Forms Clone API is running!"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "API is operational"}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -1,0 +1,44 @@
+## ✅ `.gitignore`
+
+```gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg-info/
+*.env
+
+# Virtual Environments
+env/
+venv/
+ENV/
+.venv/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# dotenv
+.env
+.env.*
+
+# Pytest cache
+.pytest_cache/
+.cache/
+
+# Mac/Linux
+.DS_Store
+Thumbs.db
+
+# Compiled files
+*.so
+
+# Mongo dump/restore
+dump/
+
+#__pycache__
+__pycache__
