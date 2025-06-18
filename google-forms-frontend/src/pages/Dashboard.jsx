@@ -1,11 +1,9 @@
-// src/pages/Dashboard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, FileText, Eye, BarChart3, Settings, Trash2 } from 'lucide-react';
 import { useApi } from '../hooks/useApi';
 import { formService } from '../services/api';
-import { LoadingSpinner, Card } from '../components/common/Button';
-import Button from '../components/common/Button';
+import { Card, Button, LoadingSpinner } from '../components/common';
 
 const Dashboard = () => {
   const { data: forms, loading, error, refetch } = useApi(() => formService.getForms());
@@ -81,7 +79,7 @@ const Dashboard = () => {
             <div className="ml-5">
               <p className="text-sm font-medium text-gray-500">Active Forms</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {forms?.filter(form => form.is_active).length || 0}
+                {forms?.filter((form) => form.is_active).length || 0}
               </p>
             </div>
           </div>
@@ -135,9 +133,7 @@ const FormCard = ({ form, onUpdate }) => {
         </div>
         <div className="ml-4 flex-shrink-0">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            form.is_active 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-gray-100 text-gray-800'
+            form.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
           }`}>
             {form.is_active ? 'Active' : 'Inactive'}
           </span>
@@ -184,7 +180,7 @@ const FormCard = ({ form, onUpdate }) => {
             onClick={() => {
               const shareUrl = `${window.location.origin}/form/${form.unique_link}`;
               navigator.clipboard.writeText(shareUrl);
-              // You can add a toast notification here
+              alert('Link copied to clipboard!');
             }}
             className="text-primary-600 hover:text-primary-700 font-medium"
           >
@@ -200,9 +196,7 @@ const EmptyState = () => (
   <Card className="p-12 text-center">
     <FileText className="mx-auto h-12 w-12 text-gray-400" />
     <h3 className="mt-4 text-lg font-medium text-gray-900">No forms yet</h3>
-    <p className="mt-2 text-gray-500">
-      Get started by creating your first form.
-    </p>
+    <p className="mt-2 text-gray-500">Get started by creating your first form.</p>
     <div className="mt-6">
       <Link to="/forms/create">
         <Button>

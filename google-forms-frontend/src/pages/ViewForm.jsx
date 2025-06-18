@@ -1,8 +1,8 @@
 // src/pages/ViewForm/ViewForm.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { formService } from '../../services/api';
-import { Card } from '../../components/common';
+import { formService } from '../services/api';
+import { Card } from '../components/common';
 
 const ViewForm = () => {
   const { id } = useParams();

@@ -4,16 +4,16 @@ from datetime import datetime
 from bson import ObjectId
 from app.schemas.field import PyObjectId, FieldCreate
 
-# Used when user submits form creation input (embedded fields)
-class FormFieldInput(BaseModel):
-    field_details: FieldCreate
-
 class FormBase(BaseModel):
     title: str
     description: Optional[str] = None
 
+class FormFieldInput(BaseModel):
+    field_details: dict
+
 class FormCreate(FormBase):
     fields: List[FormFieldInput]
+
 
 class FormUpdate(BaseModel):
     title: Optional[str] = None
@@ -23,7 +23,7 @@ class FormUpdate(BaseModel):
 class FormFieldInDB(BaseModel):
     field_id: str
     position: int
-    field_details: Optional[FieldCreate] = None
+    field_details: dict  # Changed from Optional[FieldCreate] to dict for flexibility
 
 class FormInDB(FormBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
@@ -48,3 +48,7 @@ class Form(FormBase):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+
+# Keep this for backward compatibility if needed elsewhere
+class FormFieldInput(BaseModel):
+    field_details: FieldCreate

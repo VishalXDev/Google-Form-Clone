@@ -7,8 +7,8 @@ import { Toaster } from "react-hot-toast";
 import Dashboard from "./pages/Dashboard.jsx";
 import CreateForm from "./pages/CreateForm";
 import EditForm from "./pages/EditForm";
-import ViewForm from "./pages/ViewForm/ViewForm.jsx";
-import FormResponses from "./pages/FormResponse";
+import ViewForm from "./pages/ViewForm.jsx";
+import FormResponses from "./pages/FormResponses.jsx";
 import PublicForm from "./pages/PublicForm";
 import NotFound from "./pages/NotFound.jsx";
 

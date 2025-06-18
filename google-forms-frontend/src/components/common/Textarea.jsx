@@ -1,5 +1,4 @@
-// src/components/common/Textarea.jsx
-export const Textarea = ({ 
+const Textarea = ({ 
   label, 
   error, 
   required = false, 
@@ -26,3 +25,5 @@ export const Textarea = ({
     </div>
   );
 };
+
+export default Textarea;

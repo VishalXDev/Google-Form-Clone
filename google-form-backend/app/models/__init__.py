@@ -1,6 +1,6 @@
 from .field import FieldModel, FieldType
 from .form import FormModel, FormSettings, FormFieldEmbedded
-from .response import ResponseModel, FieldResponseData, ResponseSummary
+from .form_response import ResponseModel, FieldResponseData, ResponseSummary  # ✅ Fixed import path
 
 __all__ = [
     "FieldModel",

@@ -1,5 +1,4 @@
-// src/components/common/Input.jsx
-export const Input = ({ 
+const Input = ({ 
   label, 
   error, 
   required = false, 
@@ -24,3 +23,5 @@ export const Input = ({
     </div>
   );
 };
+
+export default Input;

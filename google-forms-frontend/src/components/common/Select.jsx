@@ -1,5 +1,4 @@
-// src/components/common/Select.jsx
-export const Select = ({ 
+const Select = ({ 
   label, 
   error, 
   required = false, 
@@ -33,3 +32,5 @@ export const Select = ({
     </div>
   );
 };
+
+export default Select;

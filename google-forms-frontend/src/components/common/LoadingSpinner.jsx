@@ -1,7 +1,6 @@
-// src/components/common/LoadingSpinner.jsx
-import { Loader2 } from 'lucide-react'; // ✅ Add this line
+import { Loader2 } from 'lucide-react';
 
-export const LoadingSpinner = ({ size = 'md', className = '' }) => {
+const LoadingSpinner = ({ size = 'md', className = '' }) => {
   const sizes = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
@@ -14,3 +13,5 @@ export const LoadingSpinner = ({ size = 'md', className = '' }) => {
     </div>
   );
 };
+
+export default LoadingSpinner;

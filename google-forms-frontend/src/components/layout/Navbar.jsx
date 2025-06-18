@@ -18,7 +18,7 @@ const Navbar = () => {
           <div className="flex">
             <Link to="/" className="flex items-center px-4 text-lg font-semibold text-gray-900">
               <FileText className="w-6 h-6 mr-2 text-primary-600" />
-              Forms Builder
+              Google-Forms-Builder
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
