@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles */
+body {
+  @apply font-sans text-gray-800 bg-gray-50;
+}
+
+a {
+  @apply text-primary-600 hover:text-primary-700 transition-colors;
+}
+
+button {
+  @apply focus:outline-none;
+}
+
+/* You can define reusable component classes here */
+.btn {
+  @apply inline-flex items-center justify-center font-medium rounded-md transition px-4 py-2;
+}
