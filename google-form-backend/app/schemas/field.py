@@ -2,7 +2,10 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 from bson import ObjectId
+from pydantic_core import core_schema
+from pydantic import GetCoreSchemaHandler
 
+# ✅ Fix for Pydantic v2
 class PyObjectId(ObjectId):
     @classmethod
     def __get_validators__(cls):
@@ -11,13 +14,14 @@ class PyObjectId(ObjectId):
     @classmethod
     def validate(cls, v):
         if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
+            raise ValueError("Invalid ObjectId")
         return ObjectId(v)
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+    def __get_pydantic_json_schema__(cls, core_schema: core_schema.CoreSchema, handler: GetCoreSchemaHandler):
+        return {"type": "string", "format": "objectid"}
 
+# Schema base
 class FieldBase(BaseModel):
     name: str
     field_type: str = Field(..., description="Field type: single_choice, number, text")
@@ -36,17 +40,17 @@ class FieldUpdate(BaseModel):
 class FieldInDB(FieldBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True  # replaces allow_population_by_field_name
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
 class Field(FieldBase):
     id: str
     created_at: datetime
-    
+
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}

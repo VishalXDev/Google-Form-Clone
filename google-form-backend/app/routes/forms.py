@@ -5,8 +5,11 @@ from app.schemas.form import Form, FormCreate, FormUpdate
 from bson import ObjectId
 from datetime import datetime
 import uuid
+import logging
 
 router = APIRouter(prefix="/forms", tags=["forms"])
+logger = logging.getLogger(__name__)
+
 
 @router.post("/", response_model=Form)
 async def create_form(form: FormCreate):
@@ -16,8 +19,7 @@ async def create_form(form: FormCreate):
     for index, field_input in enumerate(form.fields):
         field_data = field_input.field_details
         field_id = str(ObjectId())  # Generate unique field ID
-        
-        # Store the field in DB (optional if you want separate field tracking)
+
         await db.fields.insert_one({
             "_id": ObjectId(field_id),
             **field_data
@@ -47,18 +49,19 @@ async def create_form(form: FormCreate):
     return Form(**created_form)
 
 
-
 @router.get("/", response_model=List[Form])
 async def get_forms(skip: int = 0, limit: int = 100):
     db = get_database()
-
     cursor = db.forms.find().skip(skip).limit(limit)
     forms = []
 
     async for form in cursor:
-        form["id"] = str(form["_id"])
-        del form["_id"]
-        forms.append(Form(**form))
+        try:
+            form["id"] = str(form["_id"])
+            del form["_id"]
+            forms.append(Form(**form))
+        except Exception as e:
+            logger.warning(f"Skipping malformed form document: {e}")
 
     return forms
 

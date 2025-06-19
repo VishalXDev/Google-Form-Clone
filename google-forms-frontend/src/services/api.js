@@ -1,8 +1,7 @@
-// src/services/api.js
 import axios from 'axios';
 
 const API_VERSION = '/api/v1';
-const API_BASE_URL = process.env.REACT_APP_API_URL || `http://localhost:8000${API_VERSION}`;
+const API_BASE_URL = `${process.env.REACT_APP_API_URL}${API_VERSION}`;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -11,23 +10,16 @@ const api = axios.create({
   },
 });
 
-// Request interceptor for debugging
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     console.log('API Request:', config.method?.toUpperCase(), config.url);
-
-    // Optional future auth header
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for error handling
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
