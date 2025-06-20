@@ -7,10 +7,8 @@ from app.routes import fields, forms, responses
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     await connect_to_mongo()
     yield
-    # Shutdown
     await close_mongo_connection()
 
 app = FastAPI(
@@ -20,7 +18,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
@@ -29,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(fields.router, prefix="/api/v1")
 app.include_router(forms.router, prefix="/api/v1")
 app.include_router(responses.router, prefix="/api/v1") 
@@ -44,4 +40,8 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "app.main:app",  # this must be the full import path
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000))
+    )
